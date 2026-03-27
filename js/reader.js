@@ -4,18 +4,11 @@ const novelId = params.get("novel");
 let currentVolume = null;
 let currentChapter = null;
 
-// ================= INIT =================
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
-  const volume = await getFirstVolume(novelId);
-  if (!volume) return;
-
-  const chapter = await getFirstChapter(volume.id);
-  if (!chapter) return;
-
-  currentVolume = volume;
-  currentChapter = chapter;
+  currentVolume = await getFirstVolume(novelId);
+  currentChapter = await getFirstChapter(currentVolume.id);
 
   render();
 
@@ -23,25 +16,20 @@ async function init() {
   document.getElementById("prevBtn").onclick = goPrev;
 }
 
-// ================= RENDER =================
+// render
 function render() {
   document.getElementById("volume").textContent = currentVolume.title;
   document.getElementById("chapter").textContent = currentChapter.title;
 
-  const contentEl = document.getElementById("content");
+  document.getElementById("content").innerHTML =
+    marked.parse(currentChapter.content);
 
-  contentEl.innerHTML =
-    typeof marked !== "undefined"
-      ? marked.parse(currentChapter.content)
-      : currentChapter.content;
-
-  // 🔥 scroll ke atas
   window.scrollTo({ top: 0 });
 
   updateNav();
 }
 
-// ================= NEXT =================
+// next
 async function goNext() {
   let next = await getNextChapter(
     currentVolume.id,
@@ -67,7 +55,7 @@ async function goNext() {
   render();
 }
 
-// ================= PREV =================
+// prev
 async function goPrev() {
   let prev = await getPrevChapter(
     currentVolume.id,
@@ -95,14 +83,12 @@ async function goPrev() {
   );
 
   const data = await res.json();
-  if (!data.length) return;
-
   currentChapter = data[0];
 
   render();
 }
 
-// ================= NAV CONTROL =================
+// nav control
 async function updateNav() {
   const next = await getNextChapter(
     currentVolume.id,
@@ -124,6 +110,11 @@ async function updateNav() {
     currentVolume.volume_number
   );
 
-  document.getElementById("nextBtn").hidden = !next && !nextVol;
-  document.getElementById("prevBtn").hidden = !prev && !prevVol;
+  document.getElementById("nextBtn").disabled = !next && !nextVol;
+  document.getElementById("prevBtn").disabled = !prev && !prevVol;
+}
+
+// back
+function goHome() {
+  window.location.href = "index.html";
 }
