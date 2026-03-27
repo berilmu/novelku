@@ -1,0 +1,35 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #0f0f0f;
+  color: #fff;
+}
+
+.container {
+  padding: 20px;
+  max-width: 700px;
+  margin: auto;
+}
+
+.novel {
+  background: #1a1a1a;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+}
+
+button {
+  margin-top: 15px;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  background: #4cafef;
+  color: white;
+  font-size: 16px;
+}
+
+#content {
+  margin-top: 20px;
+  line-height: 1.7;
+}
