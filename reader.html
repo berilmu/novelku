@@ -4,30 +4,42 @@
   <meta charset="UTF-8">
   <title>Reader</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
   <main class="reader">
 
-    <div class="top">
-      <button onclick="goHome()">← Kembali</button>
+    <!-- 🔙 BACK -->
+    <div class="top-bar">
+      <button onclick="goHome()">← Daftar Novel</button>
     </div>
 
-    <h2 id="volume"></h2>
-    <h3 id="chapter"></h3>
+    <!-- 📖 HEADER -->
+    <header class="reader-header">
+      <h2 id="volume"></h2>
+      <h3 id="chapter"></h3>
+    </header>
 
-    <div id="content">Loading...</div>
+    <!-- 📜 CONTENT -->
+    <article id="content" class="reader-content">
+      <p>Loading...</p>
+    </article>
 
-    <div class="nav">
-      <button id="prev">⬅️</button>
-      <button id="next">➡️</button>
-    </div>
+    <!-- 🔥 NAV -->
+    <nav class="reader-nav">
+      <button id="prevBtn">⬅️ Sebelumnya</button>
+      <button id="nextBtn">Selanjutnya ➡️</button>
+    </nav>
 
   </main>
 
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="reader.js"></script>
+  <script src="js/reader.js"></script>
 
 </body>
 </html>
