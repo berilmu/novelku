@@ -7,6 +7,7 @@ let isLoading = false;
 
 document.addEventListener("DOMContentLoaded", init);
 
+// ================= LOADING =================
 function showLoading() {
   document.getElementById("loading").classList.remove("hidden");
   isLoading = true;
@@ -17,109 +18,117 @@ function hideLoading() {
   isLoading = false;
 }
 
+// ================= INIT =================
 async function init() {
-  showLoading();
+  try {
+    showLoading();
 
-  currentVolume = await getFirstVolume(novelId);
-  currentChapter = await getFirstChapter(currentVolume.id);
+    currentVolume = await getFirstVolume(novelId);
+    currentChapter = await getFirstChapter(currentVolume.id);
 
-  render();
-  hideLoading();
+    render();
+  } catch (err) {
+    console.error("INIT ERROR:", err);
+  } finally {
+    hideLoading();
+  }
 
   document.getElementById("nextBtn").onclick = goNext;
   document.getElementById("prevBtn").onclick = goPrev;
   document.getElementById("homeBtn").onclick = goHome;
 }
 
-// render
+// ================= RENDER =================
 function render() {
   document.getElementById("volume").textContent = currentVolume.title;
   document.getElementById("chapter").textContent = currentChapter.title;
 
   document.getElementById("content").innerHTML =
-    marked.parse(currentChapter.content);
+    typeof marked !== "undefined"
+      ? marked.parse(currentChapter.content)
+      : currentChapter.content;
 
   window.scrollTo({ top: 0 });
 
   updateNav();
 }
 
-// next
+// ================= NEXT =================
 async function goNext() {
   if (isLoading) return;
-  showLoading();
 
-  let next = await getNextChapter(
-    currentVolume.id,
-    currentChapter.chapter_number
-  );
+  try {
+    showLoading();
 
-  if (next) {
-    currentChapter = next;
+    let next = await getNextChapter(
+      currentVolume.id,
+      currentChapter.chapter_number
+    );
+
+    if (next) {
+      currentChapter = next;
+    } else {
+      let nextVol = await getNextVolume(
+        novelId,
+        currentVolume.volume_number
+      );
+
+      if (!nextVol) return;
+
+      currentVolume = nextVol;
+      currentChapter = await getFirstChapter(currentVolume.id);
+    }
+
     render();
-    hideLoading();
-    return;
+  } catch (err) {
+    console.error("NEXT ERROR:", err);
+  } finally {
+    hideLoading(); // 🔥 PASTI KEJALAN
   }
-
-  let nextVol = await getNextVolume(
-    novelId,
-    currentVolume.volume_number
-  );
-
-  if (!nextVol) {
-    hideLoading();
-    return;
-  }
-
-  currentVolume = nextVol;
-  currentChapter = await getFirstChapter(currentVolume.id);
-
-  render();
-  hideLoading();
 }
 
-// prev
+// ================= PREV =================
 async function goPrev() {
   if (isLoading) return;
-  showLoading();
 
-  let prev = await getPrevChapter(
-    currentVolume.id,
-    currentChapter.chapter_number
-  );
+  try {
+    showLoading();
 
-  if (prev) {
-    currentChapter = prev;
+    let prev = await getPrevChapter(
+      currentVolume.id,
+      currentChapter.chapter_number
+    );
+
+    if (prev) {
+      currentChapter = prev;
+    } else {
+      let prevVol = await getPrevVolume(
+        novelId,
+        currentVolume.volume_number
+      );
+
+      if (!prevVol) return;
+
+      currentVolume = prevVol;
+
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/chapters?volume_id=eq.${currentVolume.id}&order=chapter_number.desc&limit=1`,
+        { headers: headers() }
+      );
+
+      const data = await res.json();
+      currentChapter = data[0];
+    }
+
     render();
-    hideLoading();
-    return;
+  } catch (err) {
+    console.error("PREV ERROR:", err);
+  } finally {
+    hideLoading(); // 🔥 PASTI KEJALAN
   }
-
-  let prevVol = await getPrevVolume(
-    novelId,
-    currentVolume.volume_number
-  );
-
-  if (!prevVol) {
-    hideLoading();
-    return;
-  }
-
-  currentVolume = prevVol;
-
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/chapters?volume_id=eq.${currentVolume.id}&order=chapter_number.desc&limit=1`,
-    { headers: headers() }
-  );
-
-  const data = await res.json();
-  currentChapter = data[0];
-
-  render();
-  hideLoading();
 }
 
-// nav control
+// ================= NAV =================
 async function updateNav() {
   const next = await getNextChapter(
     currentVolume.id,
@@ -145,9 +154,7 @@ async function updateNav() {
   document.getElementById("prevBtn").disabled = !prev && !prevVol;
 }
 
-// back
+// ================= BACK =================
 function goHome() {
-  if (isLoading) return;
-  showLoading();
   window.location.href = "index.html";
 }
