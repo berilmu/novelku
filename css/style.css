@@ -1,112 +1,90 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #0f0f0f;
+  background: #0d0d0d;
   color: #eaeaea;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* container */
-.container {
-  padding: 20px 16px 60px;
+/* layout */
+.reader {
   max-width: 720px;
   margin: auto;
+  padding: 20px 16px 60px;
 }
 
-/* judul */
-h2 {
-  margin-bottom: 5px;
-  font-weight: 600;
+/* header */
+.reader-header h2 {
+  margin: 0;
+  font-size: 20px;
 }
 
-h3 {
-  margin-top: 0;
-  color: #aaa;
-  font-weight: 400;
+.reader-header h3 {
+  margin: 5px 0 20px;
+  color: #888;
+  font-weight: normal;
 }
 
-/* ================= CONTENT ================= */
-
-#content {
-  margin-top: 25px;
+/* content */
+.reader-content {
   line-height: 1.9;
   font-size: 17px;
   letter-spacing: 0.3px;
-
   max-width: 65ch;
-  margin-left: auto;
-  margin-right: auto;
+  margin: auto;
 }
 
 /* markdown */
-#content h1,
-#content h2,
-#content h3 {
-  margin-top: 28px;
-  margin-bottom: 10px;
-}
-
-#content p {
+.reader-content p {
   margin-bottom: 16px;
   text-align: justify;
 }
 
-/* bold */
-#content strong {
-  color: #ffffff;
+.reader-content h1,
+.reader-content h2,
+.reader-content h3 {
+  margin-top: 28px;
 }
 
-/* italic */
-#content em {
-  color: #cccccc;
+.reader-content strong {
+  color: #fff;
 }
 
-/* quote */
-#content blockquote {
+.reader-content em {
+  color: #ccc;
+}
+
+.reader-content blockquote {
   border-left: 3px solid #4cafef;
   padding-left: 12px;
-  margin: 16px 0;
-  color: #ccc;
+  color: #aaa;
   font-style: italic;
 }
 
-/* ================= NAV BUTTON ================= */
-
-.nav-buttons {
+/* nav */
+.reader-nav {
   display: flex;
   justify-content: space-between;
   margin-top: 40px;
 }
 
-/* tombol modern */
-.nav-buttons button {
-  padding: 10px 16px;
-  border-radius: 999px;
+/* tombol */
+.reader-nav button {
   border: 1px solid #333;
   background: transparent;
   color: #ddd;
-  font-size: 14px;
+  padding: 10px 16px;
+  border-radius: 999px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: 0.2s;
 }
 
-.nav-buttons button:hover {
-  background: #1f1f1f;
-  color: #fff;
+.reader-nav button:hover {
+  background: #1a1a1a;
   border-color: #4cafef;
+  color: #fff;
 }
 
-/* posisi */
-#prevBtn {
-  margin-right: auto;
-}
-
-#nextBtn {
-  margin-left: auto;
-}
-
-/* mobile tweak */
-@media (max-width: 600px) {
-  #content {
-    font-size: 16px;
-  }
+/* hidden */
+button[hidden] {
+  display: none !important;
 }
