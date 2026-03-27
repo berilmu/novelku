@@ -5,71 +5,39 @@ body {
   color: #eaeaea;
 }
 
-/* container lebih lega & nyaman */
+/* container */
 .container {
   padding: 20px 16px 60px;
   max-width: 720px;
   margin: auto;
 }
 
-/* card novel */
-.novel {
-  background: #1a1a1a;
-  padding: 18px;
-  margin-bottom: 16px;
-  border-radius: 12px;
-  transition: 0.2s;
-}
-
-.novel:hover {
-  transform: scale(1.01);
-}
-
 /* judul */
-h1 {
-  text-align: center;
-  margin-bottom: 30px;
+h2 {
+  margin-bottom: 5px;
   font-weight: 600;
 }
 
-h2 {
-  margin: 0 0 5px;
-}
-
 h3 {
-  margin-top: 10px;
+  margin-top: 0;
   color: #aaa;
   font-weight: 400;
 }
 
-/* tombol */
-button {
-  margin-top: 18px;
-  padding: 14px;
-  width: 100%;
-  border: none;
-  border-radius: 8px;
-  background: #4cafef;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-button:hover {
-  background: #3a9edb;
-}
-
-/* ================= READER AREA ================= */
+/* ================= CONTENT ================= */
 
 #content {
   margin-top: 25px;
   line-height: 1.9;
   font-size: 17px;
   letter-spacing: 0.3px;
+
+  max-width: 65ch;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* markdown styling */
+/* markdown */
 #content h1,
 #content h2,
 #content h3 {
@@ -80,10 +48,6 @@ button:hover {
 
 #content p {
   margin-bottom: 16px;
-}
-
-/* dialog style (ini bikin novel terasa hidup 🔥) */
-#content p {
   text-align: justify;
 }
 
@@ -97,7 +61,46 @@ button:hover {
   color: #cccccc;
 }
 
-/* biar tidak terlalu lebar di HP */
+/* 🔥 quote (yang kamu pakai >) */
+#content blockquote {
+  border-left: 3px solid #4cafef;
+  padding-left: 12px;
+  margin: 16px 0;
+  color: #ccc;
+  font-style: italic;
+}
+
+/* ================= BUTTON ================= */
+
+.nav-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.nav-buttons button {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #4cafef;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.nav-buttons button:hover {
+  background: #3a9edb;
+}
+
+/* disabled */
+button:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+/* mobile tweak */
 @media (max-width: 600px) {
   #content {
     font-size: 16px;
