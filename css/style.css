@@ -43,7 +43,6 @@ h3 {
 #content h3 {
   margin-top: 28px;
   margin-bottom: 10px;
-  font-weight: 600;
 }
 
 #content p {
@@ -61,7 +60,7 @@ h3 {
   color: #cccccc;
 }
 
-/* 🔥 quote (yang kamu pakai >) */
+/* quote */
 #content blockquote {
   border-left: 3px solid #4cafef;
   padding-left: 12px;
@@ -70,34 +69,39 @@ h3 {
   font-style: italic;
 }
 
-/* ================= BUTTON ================= */
+/* ================= NAV BUTTON ================= */
 
 .nav-buttons {
   display: flex;
-  gap: 10px;
-  margin-top: 30px;
+  justify-content: space-between;
+  margin-top: 40px;
 }
 
+/* tombol modern */
 .nav-buttons button {
-  flex: 1;
-  padding: 14px;
-  border: none;
-  border-radius: 8px;
-  background: #4cafef;
-  color: white;
-  font-size: 16px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid #333;
+  background: transparent;
+  color: #ddd;
+  font-size: 14px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.2s ease;
 }
 
 .nav-buttons button:hover {
-  background: #3a9edb;
+  background: #1f1f1f;
+  color: #fff;
+  border-color: #4cafef;
 }
 
-/* disabled */
-button:disabled {
-  background: #555;
-  cursor: not-allowed;
+/* posisi */
+#prevBtn {
+  margin-right: auto;
+}
+
+#nextBtn {
+  margin-left: auto;
 }
 
 /* mobile tweak */
