@@ -28,12 +28,11 @@ function render() {
   document.getElementById("volume").innerText = currentVolume.title;
   document.getElementById("chapter").innerText = currentChapter.title;
 
-  // 🔥 markdown render
+  // Markdown render
   if (typeof marked !== "undefined") {
     document.getElementById("content").innerHTML =
       marked.parse(currentChapter.content);
   } else {
-    console.error("Marked.js belum ke-load");
     document.getElementById("content").innerText =
       currentChapter.content;
   }
@@ -54,7 +53,6 @@ async function nextChapter() {
     return;
   }
 
-  // pindah ke volume berikutnya
   let nextVol = await getNextVolume(
     novelId,
     currentVolume.volume_number
@@ -81,7 +79,6 @@ async function prevChapter() {
     return;
   }
 
-  // pindah ke volume sebelumnya
   let prevVol = await getPrevVolume(
     novelId,
     currentVolume.volume_number
@@ -91,7 +88,6 @@ async function prevChapter() {
 
   currentVolume = prevVol;
 
-  // ambil chapter terakhir di volume sebelumnya
   const res = await fetch(
     `${SUPABASE_URL}/rest/v1/chapters?volume_id=eq.${currentVolume.id}&order=chapter_number.desc&limit=1`,
     { headers: headers() }
@@ -103,7 +99,7 @@ async function prevChapter() {
   render();
 }
 
-// ================= BUTTON STATE =================
+// ================= BUTTON VISIBILITY =================
 async function updateButtons() {
   const next = await getNextChapter(
     currentVolume.id,
@@ -125,8 +121,12 @@ async function updateButtons() {
     currentVolume.volume_number
   );
 
-  document.getElementById("nextBtn").disabled = !next && !nextVol;
-  document.getElementById("prevBtn").disabled = !prev && !prevVol;
+  const nextBtn = document.getElementById("nextBtn");
+  const prevBtn = document.getElementById("prevBtn");
+
+  // 🔥 tampil / hilang
+  nextBtn.style.display = next || nextVol ? "inline-block" : "none";
+  prevBtn.style.display = prev || prevVol ? "inline-block" : "none";
 }
 
 // ================= EVENT =================
