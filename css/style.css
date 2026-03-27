@@ -1,35 +1,105 @@
 body {
   margin: 0;
-  font-family: sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: #0f0f0f;
-  color: #fff;
+  color: #eaeaea;
 }
 
+/* container lebih lega & nyaman */
 .container {
-  padding: 20px;
-  max-width: 700px;
+  padding: 20px 16px 60px;
+  max-width: 720px;
   margin: auto;
 }
 
+/* card novel */
 .novel {
   background: #1a1a1a;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  transition: 0.2s;
 }
 
+.novel:hover {
+  transform: scale(1.01);
+}
+
+/* judul */
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+h2 {
+  margin: 0 0 5px;
+}
+
+h3 {
+  margin-top: 10px;
+  color: #aaa;
+  font-weight: 400;
+}
+
+/* tombol */
 button {
-  margin-top: 15px;
-  padding: 12px;
+  margin-top: 18px;
+  padding: 14px;
   width: 100%;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #4cafef;
   color: white;
   font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
+button:hover {
+  background: #3a9edb;
+}
+
+/* ================= READER AREA ================= */
+
 #content {
-  margin-top: 20px;
-  line-height: 1.7;
+  margin-top: 25px;
+  line-height: 1.9;
+  font-size: 17px;
+  letter-spacing: 0.3px;
+}
+
+/* markdown styling */
+#content h1,
+#content h2,
+#content h3 {
+  margin-top: 28px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+#content p {
+  margin-bottom: 16px;
+}
+
+/* dialog style (ini bikin novel terasa hidup 🔥) */
+#content p {
+  text-align: justify;
+}
+
+/* bold */
+#content strong {
+  color: #ffffff;
+}
+
+/* italic */
+#content em {
+  color: #cccccc;
+}
+
+/* biar tidak terlalu lebar di HP */
+@media (max-width: 600px) {
+  #content {
+    font-size: 16px;
+  }
 }
