@@ -11,27 +11,29 @@
 <body>
 
   <div class="container">
+
     <h2 id="volume"></h2>
     <h3 id="chapter"></h3>
 
-    <!-- 🔥 CONTENT (markdown akan dirender di sini) -->
+    <!-- 📖 CONTENT -->
     <div id="content"></div>
 
-    <button id="nextBtn">Next</button>
+    <!-- 🔥 NAVIGATION -->
+    <div class="nav-buttons">
+      <button id="prevBtn">⬅️ Kembali</button>
+      <button id="nextBtn">Next ➡️</button>
+    </div>
+
   </div>
 
-  <!-- ================= SCRIPT ORDER (PENTING BANGET) ================= -->
+  <!-- ================= SCRIPT ================= -->
 
-  <!-- 1. Config -->
   <script src="js/config.js"></script>
-
-  <!-- 2. API -->
   <script src="js/api.js"></script>
 
-  <!-- 3. MARKDOWN PARSER (WAJIB SEBELUM reader.js) -->
+  <!-- 🔥 MARKDOWN -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-  <!-- 4. Reader Logic -->
   <script src="js/reader.js"></script>
 
 </body>
