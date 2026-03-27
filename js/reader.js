@@ -5,40 +5,44 @@ let currentVolume = null;
 let currentChapter = null;
 
 // ================= INIT =================
-async function initReader() {
-  currentVolume = await getFirstVolume(novelId);
-  currentChapter = await getFirstChapter(currentVolume.id);
+document.addEventListener("DOMContentLoaded", init);
 
-  if (!currentVolume || !currentChapter) {
-    console.error("Data tidak lengkap");
-    return;
-  }
+async function init() {
+  const volume = await getFirstVolume(novelId);
+  if (!volume) return;
+
+  const chapter = await getFirstChapter(volume.id);
+  if (!chapter) return;
+
+  currentVolume = volume;
+  currentChapter = chapter;
 
   render();
+
+  document.getElementById("nextBtn").onclick = goNext;
+  document.getElementById("prevBtn").onclick = goPrev;
 }
 
 // ================= RENDER =================
 function render() {
-  document.getElementById("volume").innerText = currentVolume.title;
-  document.getElementById("chapter").innerText = currentChapter.title;
+  document.getElementById("volume").textContent = currentVolume.title;
+  document.getElementById("chapter").textContent = currentChapter.title;
 
-  // markdown
-  document.getElementById("content").innerHTML =
+  const contentEl = document.getElementById("content");
+
+  contentEl.innerHTML =
     typeof marked !== "undefined"
       ? marked.parse(currentChapter.content)
       : currentChapter.content;
 
   // 🔥 scroll ke atas
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  window.scrollTo({ top: 0 });
 
-  updateButtons();
+  updateNav();
 }
 
 // ================= NEXT =================
-async function nextChapter() {
+async function goNext() {
   let next = await getNextChapter(
     currentVolume.id,
     currentChapter.chapter_number
@@ -64,7 +68,7 @@ async function nextChapter() {
 }
 
 // ================= PREV =================
-async function prevChapter() {
+async function goPrev() {
   let prev = await getPrevChapter(
     currentVolume.id,
     currentChapter.chapter_number
@@ -85,14 +89,12 @@ async function prevChapter() {
 
   currentVolume = prevVol;
 
-  // 🔥 ambil chapter terakhir dengan helper API (bukan fetch manual)
   const res = await fetch(
     `${SUPABASE_URL}/rest/v1/chapters?volume_id=eq.${currentVolume.id}&order=chapter_number.desc&limit=1`,
     { headers: headers() }
   );
 
   const data = await res.json();
-
   if (!data.length) return;
 
   currentChapter = data[0];
@@ -100,8 +102,8 @@ async function prevChapter() {
   render();
 }
 
-// ================= BUTTON VISIBILITY =================
-async function updateButtons() {
+// ================= NAV CONTROL =================
+async function updateNav() {
   const next = await getNextChapter(
     currentVolume.id,
     currentChapter.chapter_number
@@ -122,30 +124,6 @@ async function updateButtons() {
     currentVolume.volume_number
   );
 
-  const nextBtn = document.getElementById("nextBtn");
-  const prevBtn = document.getElementById("prevBtn");
-
-  // 🔥 tampil / hilang setelah data siap
-  if (next || nextVol) {
-    nextBtn.style.display = "inline-block";
-  } else {
-    nextBtn.style.display = "none";
-  }
-
-  if (prev || prevVol) {
-    prevBtn.style.display = "inline-block";
-  } else {
-    prevBtn.style.display = "none";
-  }
+  document.getElementById("nextBtn").hidden = !next && !nextVol;
+  document.getElementById("prevBtn").hidden = !prev && !prevVol;
 }
-
-// ================= EVENT =================
-document.addEventListener("DOMContentLoaded", () => {
-  const nextBtn = document.getElementById("nextBtn");
-  const prevBtn = document.getElementById("prevBtn");
-
-  nextBtn.addEventListener("click", nextChapter);
-  prevBtn.addEventListener("click", prevChapter);
-
-  initReader();
-});
