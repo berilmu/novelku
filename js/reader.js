@@ -1,91 +1,120 @@
-const params = new URLSearchParams(location.search);
+const params = new URLSearchParams(window.location.search);
 const novelId = params.get("novel");
 
-const URL = "https://YOUR_PROJECT.supabase.co/rest/v1";
-const KEY = "YOUR_ANON_KEY";
+let currentVolume = null;
+let currentChapter = null;
 
-let volume, chapter;
+document.addEventListener("DOMContentLoaded", init);
 
-// helper fetch
-async function q(path) {
-  const r = await fetch(URL + path, {
-    headers: { apikey: KEY, Authorization: `Bearer ${KEY}` }
-  });
-  return r.json();
-}
-
-// init
 async function init() {
-  volume = (await q(`/volumes?novel_id=eq.${novelId}&order=volume_number.asc&limit=1`))[0];
-  chapter = (await q(`/chapters?volume_id=eq.${volume.id}&order=chapter_number.asc&limit=1`))[0];
+  currentVolume = await getFirstVolume(novelId);
+  currentChapter = await getFirstChapter(currentVolume.id);
 
   render();
+
+  document.getElementById("nextBtn").onclick = goNext;
+  document.getElementById("prevBtn").onclick = goPrev;
 }
 
 // render
 function render() {
-  document.getElementById("volume").textContent = volume.title;
-  document.getElementById("chapter").textContent = chapter.title;
-  document.getElementById("content").innerHTML = marked.parse(chapter.content);
+  document.getElementById("volume").textContent = currentVolume.title;
+  document.getElementById("chapter").textContent = currentChapter.title;
 
-  window.scrollTo(0, 0);
+  document.getElementById("content").innerHTML =
+    marked.parse(currentChapter.content);
+
+  window.scrollTo({ top: 0 });
 
   updateNav();
 }
 
 // next
-async function next() {
-  let n = (await q(`/chapters?volume_id=eq.${volume.id}&chapter_number=gt.${chapter.chapter_number}&order=chapter_number.asc&limit=1`))[0];
+async function goNext() {
+  let next = await getNextChapter(
+    currentVolume.id,
+    currentChapter.chapter_number
+  );
 
-  if (n) {
-    chapter = n;
-  } else {
-    let v = (await q(`/volumes?novel_id=eq.${novelId}&volume_number=gt.${volume.volume_number}&order=volume_number.asc&limit=1`))[0];
-    if (!v) return;
-
-    volume = v;
-    chapter = (await q(`/chapters?volume_id=eq.${volume.id}&order=chapter_number.asc&limit=1`))[0];
+  if (next) {
+    currentChapter = next;
+    render();
+    return;
   }
+
+  let nextVol = await getNextVolume(
+    novelId,
+    currentVolume.volume_number
+  );
+
+  if (!nextVol) return;
+
+  currentVolume = nextVol;
+  currentChapter = await getFirstChapter(currentVolume.id);
 
   render();
 }
 
 // prev
-async function prev() {
-  let p = (await q(`/chapters?volume_id=eq.${volume.id}&chapter_number=lt.${chapter.chapter_number}&order=chapter_number.desc&limit=1`))[0];
+async function goPrev() {
+  let prev = await getPrevChapter(
+    currentVolume.id,
+    currentChapter.chapter_number
+  );
 
-  if (p) {
-    chapter = p;
-  } else {
-    let v = (await q(`/volumes?novel_id=eq.${novelId}&volume_number=lt.${volume.volume_number}&order=volume_number.desc&limit=1`))[0];
-    if (!v) return;
-
-    volume = v;
-    chapter = (await q(`/chapters?volume_id=eq.${volume.id}&order=chapter_number.desc&limit=1`))[0];
+  if (prev) {
+    currentChapter = prev;
+    render();
+    return;
   }
+
+  let prevVol = await getPrevVolume(
+    novelId,
+    currentVolume.volume_number
+  );
+
+  if (!prevVol) return;
+
+  currentVolume = prevVol;
+
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/chapters?volume_id=eq.${currentVolume.id}&order=chapter_number.desc&limit=1`,
+    { headers: headers() }
+  );
+
+  const data = await res.json();
+  currentChapter = data[0];
 
   render();
 }
 
-// nav state
+// nav control
 async function updateNav() {
-  let n = (await q(`/chapters?volume_id=eq.${volume.id}&chapter_number=gt.${chapter.chapter_number}&limit=1`))[0];
-  let v = (await q(`/volumes?novel_id=eq.${novelId}&volume_number=gt.${volume.volume_number}&limit=1`))[0];
+  const next = await getNextChapter(
+    currentVolume.id,
+    currentChapter.chapter_number
+  );
 
-  let p = (await q(`/chapters?volume_id=eq.${volume.id}&chapter_number=lt.${chapter.chapter_number}&limit=1`))[0];
-  let pv = (await q(`/volumes?novel_id=eq.${novelId}&volume_number=lt.${volume.volume_number}&limit=1`))[0];
+  const nextVol = await getNextVolume(
+    novelId,
+    currentVolume.volume_number
+  );
 
-  document.getElementById("next").disabled = !n && !v;
-  document.getElementById("prev").disabled = !p && !pv;
+  const prev = await getPrevChapter(
+    currentVolume.id,
+    currentChapter.chapter_number
+  );
+
+  const prevVol = await getPrevVolume(
+    novelId,
+    currentVolume.volume_number
+  );
+
+  document.getElementById("nextBtn").disabled = !next && !nextVol;
+  document.getElementById("prevBtn").disabled = !prev && !prevVol;
 }
 
 // back
 function goHome() {
-  location.href = "index.html";
+  window.location.href = "index.html";
 }
-
-// event
-document.getElementById("next").onclick = next;
-document.getElementById("prev").onclick = prev;
-
-init();
