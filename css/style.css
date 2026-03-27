@@ -2,55 +2,58 @@ body {
   margin: 0;
   background: #0d0d0d;
   color: #eaeaea;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: Georgia, serif;
 }
 
 /* layout */
 .reader {
-  max-width: 720px;
+  max-width: 640px;
   margin: auto;
-  padding: 20px 16px 60px;
+  padding: 20px 18px 80px;
+}
+
+/* top bar */
+.top-bar {
+  margin-bottom: 20px;
+}
+
+.top-bar button {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.top-bar button:hover {
+  color: #fff;
 }
 
 /* header */
 .reader-header h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .reader-header h3 {
-  margin: 5px 0 20px;
+  margin: 6px 0 20px;
   color: #888;
   font-weight: normal;
+  font-size: 14px;
 }
 
 /* content */
 .reader-content {
-  line-height: 1.9;
-  font-size: 17px;
-  letter-spacing: 0.3px;
-  max-width: 65ch;
+  line-height: 2;
+  font-size: 18px;
+  max-width: 60ch;
   margin: auto;
 }
 
 /* markdown */
 .reader-content p {
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   text-align: justify;
-}
-
-.reader-content h1,
-.reader-content h2,
-.reader-content h3 {
-  margin-top: 28px;
-}
-
-.reader-content strong {
-  color: #fff;
-}
-
-.reader-content em {
-  color: #ccc;
 }
 
 .reader-content blockquote {
@@ -64,27 +67,25 @@ body {
 .reader-nav {
   display: flex;
   justify-content: space-between;
-  margin-top: 40px;
+  margin-top: 50px;
 }
 
 /* tombol */
 .reader-nav button {
+  background: #1a1a1a;
   border: 1px solid #333;
-  background: transparent;
   color: #ddd;
-  padding: 10px 16px;
-  border-radius: 999px;
+  padding: 10px 14px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: 0.2s;
 }
 
 .reader-nav button:hover {
-  background: #1a1a1a;
-  border-color: #4cafef;
-  color: #fff;
+  background: #2a2a2a;
 }
 
-/* hidden */
-button[hidden] {
-  display: none !important;
+/* disable */
+.reader-nav button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
