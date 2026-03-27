@@ -14,25 +14,25 @@
 
     <!-- 🔙 BACK -->
     <div class="top-bar">
-      <button onclick="goHome()">← Daftar Novel</button>
+      <button id="homeBtn">← Daftar Novel</button>
     </div>
 
-    <!-- 📖 HEADER -->
     <header class="reader-header">
       <h2 id="volume"></h2>
       <h3 id="chapter"></h3>
     </header>
 
-    <!-- 📜 CONTENT -->
     <article id="content" class="reader-content">
       <p>Loading...</p>
     </article>
 
-    <!-- 🔥 NAV -->
     <nav class="reader-nav">
       <button id="prevBtn">⬅️ Sebelumnya</button>
       <button id="nextBtn">Selanjutnya ➡️</button>
     </nav>
+
+    <!-- 🔥 LOADING -->
+    <div id="loading" class="loading hidden">Loading...</div>
 
   </main>
 
