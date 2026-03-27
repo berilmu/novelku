@@ -1,160 +1,91 @@
-const params = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(location.search);
 const novelId = params.get("novel");
 
-let currentVolume = null;
-let currentChapter = null;
-let isLoading = false;
+const URL = "https://YOUR_PROJECT.supabase.co/rest/v1";
+const KEY = "YOUR_ANON_KEY";
 
-document.addEventListener("DOMContentLoaded", init);
+let volume, chapter;
 
-// ================= LOADING =================
-function showLoading() {
-  document.getElementById("loading").classList.remove("hidden");
-  isLoading = true;
+// helper fetch
+async function q(path) {
+  const r = await fetch(URL + path, {
+    headers: { apikey: KEY, Authorization: `Bearer ${KEY}` }
+  });
+  return r.json();
 }
 
-function hideLoading() {
-  document.getElementById("loading").classList.add("hidden");
-  isLoading = false;
-}
-
-// ================= INIT =================
+// init
 async function init() {
-  try {
-    showLoading();
+  volume = (await q(`/volumes?novel_id=eq.${novelId}&order=volume_number.asc&limit=1`))[0];
+  chapter = (await q(`/chapters?volume_id=eq.${volume.id}&order=chapter_number.asc&limit=1`))[0];
 
-    currentVolume = await getFirstVolume(novelId);
-    currentChapter = await getFirstChapter(currentVolume.id);
-
-    render();
-  } catch (err) {
-    console.error("INIT ERROR:", err);
-  } finally {
-    hideLoading();
-  }
-
-  document.getElementById("nextBtn").onclick = goNext;
-  document.getElementById("prevBtn").onclick = goPrev;
-  document.getElementById("homeBtn").onclick = goHome;
+  render();
 }
 
-// ================= RENDER =================
+// render
 function render() {
-  document.getElementById("volume").textContent = currentVolume.title;
-  document.getElementById("chapter").textContent = currentChapter.title;
+  document.getElementById("volume").textContent = volume.title;
+  document.getElementById("chapter").textContent = chapter.title;
+  document.getElementById("content").innerHTML = marked.parse(chapter.content);
 
-  document.getElementById("content").innerHTML =
-    typeof marked !== "undefined"
-      ? marked.parse(currentChapter.content)
-      : currentChapter.content;
-
-  window.scrollTo({ top: 0 });
+  window.scrollTo(0, 0);
 
   updateNav();
 }
 
-// ================= NEXT =================
-async function goNext() {
-  if (isLoading) return;
+// next
+async function next() {
+  let n = (await q(`/chapters?volume_id=eq.${volume.id}&chapter_number=gt.${chapter.chapter_number}&order=chapter_number.asc&limit=1`))[0];
 
-  try {
-    showLoading();
+  if (n) {
+    chapter = n;
+  } else {
+    let v = (await q(`/volumes?novel_id=eq.${novelId}&volume_number=gt.${volume.volume_number}&order=volume_number.asc&limit=1`))[0];
+    if (!v) return;
 
-    let next = await getNextChapter(
-      currentVolume.id,
-      currentChapter.chapter_number
-    );
-
-    if (next) {
-      currentChapter = next;
-    } else {
-      let nextVol = await getNextVolume(
-        novelId,
-        currentVolume.volume_number
-      );
-
-      if (!nextVol) return;
-
-      currentVolume = nextVol;
-      currentChapter = await getFirstChapter(currentVolume.id);
-    }
-
-    render();
-  } catch (err) {
-    console.error("NEXT ERROR:", err);
-  } finally {
-    hideLoading(); // 🔥 PASTI KEJALAN
+    volume = v;
+    chapter = (await q(`/chapters?volume_id=eq.${volume.id}&order=chapter_number.asc&limit=1`))[0];
   }
+
+  render();
 }
 
-// ================= PREV =================
-async function goPrev() {
-  if (isLoading) return;
+// prev
+async function prev() {
+  let p = (await q(`/chapters?volume_id=eq.${volume.id}&chapter_number=lt.${chapter.chapter_number}&order=chapter_number.desc&limit=1`))[0];
 
-  try {
-    showLoading();
+  if (p) {
+    chapter = p;
+  } else {
+    let v = (await q(`/volumes?novel_id=eq.${novelId}&volume_number=lt.${volume.volume_number}&order=volume_number.desc&limit=1`))[0];
+    if (!v) return;
 
-    let prev = await getPrevChapter(
-      currentVolume.id,
-      currentChapter.chapter_number
-    );
-
-    if (prev) {
-      currentChapter = prev;
-    } else {
-      let prevVol = await getPrevVolume(
-        novelId,
-        currentVolume.volume_number
-      );
-
-      if (!prevVol) return;
-
-      currentVolume = prevVol;
-
-      const res = await fetch(
-        `${SUPABASE_URL}/rest/v1/chapters?volume_id=eq.${currentVolume.id}&order=chapter_number.desc&limit=1`,
-        { headers: headers() }
-      );
-
-      const data = await res.json();
-      currentChapter = data[0];
-    }
-
-    render();
-  } catch (err) {
-    console.error("PREV ERROR:", err);
-  } finally {
-    hideLoading(); // 🔥 PASTI KEJALAN
+    volume = v;
+    chapter = (await q(`/chapters?volume_id=eq.${volume.id}&order=chapter_number.desc&limit=1`))[0];
   }
+
+  render();
 }
 
-// ================= NAV =================
+// nav state
 async function updateNav() {
-  const next = await getNextChapter(
-    currentVolume.id,
-    currentChapter.chapter_number
-  );
+  let n = (await q(`/chapters?volume_id=eq.${volume.id}&chapter_number=gt.${chapter.chapter_number}&limit=1`))[0];
+  let v = (await q(`/volumes?novel_id=eq.${novelId}&volume_number=gt.${volume.volume_number}&limit=1`))[0];
 
-  const nextVol = await getNextVolume(
-    novelId,
-    currentVolume.volume_number
-  );
+  let p = (await q(`/chapters?volume_id=eq.${volume.id}&chapter_number=lt.${chapter.chapter_number}&limit=1`))[0];
+  let pv = (await q(`/volumes?novel_id=eq.${novelId}&volume_number=lt.${volume.volume_number}&limit=1`))[0];
 
-  const prev = await getPrevChapter(
-    currentVolume.id,
-    currentChapter.chapter_number
-  );
-
-  const prevVol = await getPrevVolume(
-    novelId,
-    currentVolume.volume_number
-  );
-
-  document.getElementById("nextBtn").disabled = !next && !nextVol;
-  document.getElementById("prevBtn").disabled = !prev && !prevVol;
+  document.getElementById("next").disabled = !n && !v;
+  document.getElementById("prev").disabled = !p && !pv;
 }
 
-// ================= BACK =================
+// back
 function goHome() {
-  window.location.href = "index.html";
+  location.href = "index.html";
 }
+
+// event
+document.getElementById("next").onclick = next;
+document.getElementById("prev").onclick = prev;
+
+init();
