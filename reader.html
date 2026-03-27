@@ -12,23 +12,30 @@
 
   <main class="reader">
 
+    <!-- 🔙 BACK -->
+    <div class="top-bar">
+      <button onclick="goHome()">← Daftar Novel</button>
+    </div>
+
+    <!-- 📖 HEADER -->
     <header class="reader-header">
       <h2 id="volume"></h2>
       <h3 id="chapter"></h3>
     </header>
 
+    <!-- 📜 CONTENT -->
     <article id="content" class="reader-content">
       <p>Loading...</p>
     </article>
 
+    <!-- 🔥 NAV -->
     <nav class="reader-nav">
-      <button id="prevBtn" hidden>⬅️</button>
-      <button id="nextBtn" hidden>➡️</button>
+      <button id="prevBtn">⬅️ Sebelumnya</button>
+      <button id="nextBtn">Selanjutnya ➡️</button>
     </nav>
 
   </main>
 
-  <!-- scripts -->
   <script src="js/config.js"></script>
   <script src="js/api.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
