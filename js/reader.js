@@ -3,17 +3,32 @@ const novelId = params.get("novel");
 
 let currentVolume = null;
 let currentChapter = null;
+let isLoading = false;
 
 document.addEventListener("DOMContentLoaded", init);
 
+function showLoading() {
+  document.getElementById("loading").classList.remove("hidden");
+  isLoading = true;
+}
+
+function hideLoading() {
+  document.getElementById("loading").classList.add("hidden");
+  isLoading = false;
+}
+
 async function init() {
+  showLoading();
+
   currentVolume = await getFirstVolume(novelId);
   currentChapter = await getFirstChapter(currentVolume.id);
 
   render();
+  hideLoading();
 
   document.getElementById("nextBtn").onclick = goNext;
   document.getElementById("prevBtn").onclick = goPrev;
+  document.getElementById("homeBtn").onclick = goHome;
 }
 
 // render
@@ -31,6 +46,9 @@ function render() {
 
 // next
 async function goNext() {
+  if (isLoading) return;
+  showLoading();
+
   let next = await getNextChapter(
     currentVolume.id,
     currentChapter.chapter_number
@@ -39,6 +57,7 @@ async function goNext() {
   if (next) {
     currentChapter = next;
     render();
+    hideLoading();
     return;
   }
 
@@ -47,16 +66,23 @@ async function goNext() {
     currentVolume.volume_number
   );
 
-  if (!nextVol) return;
+  if (!nextVol) {
+    hideLoading();
+    return;
+  }
 
   currentVolume = nextVol;
   currentChapter = await getFirstChapter(currentVolume.id);
 
   render();
+  hideLoading();
 }
 
 // prev
 async function goPrev() {
+  if (isLoading) return;
+  showLoading();
+
   let prev = await getPrevChapter(
     currentVolume.id,
     currentChapter.chapter_number
@@ -65,6 +91,7 @@ async function goPrev() {
   if (prev) {
     currentChapter = prev;
     render();
+    hideLoading();
     return;
   }
 
@@ -73,7 +100,10 @@ async function goPrev() {
     currentVolume.volume_number
   );
 
-  if (!prevVol) return;
+  if (!prevVol) {
+    hideLoading();
+    return;
+  }
 
   currentVolume = prevVol;
 
@@ -86,6 +116,7 @@ async function goPrev() {
   currentChapter = data[0];
 
   render();
+  hideLoading();
 }
 
 // nav control
@@ -116,5 +147,7 @@ async function updateNav() {
 
 // back
 function goHome() {
+  if (isLoading) return;
+  showLoading();
   window.location.href = "index.html";
 }
