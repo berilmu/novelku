@@ -13,11 +13,16 @@ async function initReader() {
 function render() {
   document.getElementById("volume").innerText = currentVolume.title;
   document.getElementById("chapter").innerText = currentChapter.title;
-  document.getElementById("content").innerText = currentChapter.content;
+
+  // 🔥 INI YANG DIUBAH
+  document.getElementById("content").innerHTML = marked.parse(currentChapter.content);
 }
 
 async function nextChapter() {
-  let next = await getNextChapter(currentVolume.id, currentChapter.chapter_number);
+  let next = await getNextChapter(
+    currentVolume.id,
+    currentChapter.chapter_number
+  );
 
   if (next) {
     currentChapter = next;
@@ -25,7 +30,10 @@ async function nextChapter() {
     return;
   }
 
-  let nextVol = await getNextVolume(novelId, currentVolume.volume_number);
+  let nextVol = await getNextVolume(
+    novelId,
+    currentVolume.volume_number
+  );
 
   if (!nextVol) {
     alert("Tamat 🔥");
