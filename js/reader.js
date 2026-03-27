@@ -7,16 +7,10 @@ let currentChapter = null;
 // ================= INIT =================
 async function initReader() {
   currentVolume = await getFirstVolume(novelId);
-
-  if (!currentVolume) {
-    console.error("Volume tidak ditemukan");
-    return;
-  }
-
   currentChapter = await getFirstChapter(currentVolume.id);
 
-  if (!currentChapter) {
-    console.error("Chapter tidak ditemukan");
+  if (!currentVolume || !currentChapter) {
+    console.error("Data tidak lengkap");
     return;
   }
 
@@ -28,14 +22,17 @@ function render() {
   document.getElementById("volume").innerText = currentVolume.title;
   document.getElementById("chapter").innerText = currentChapter.title;
 
-  // Markdown render
-  if (typeof marked !== "undefined") {
-    document.getElementById("content").innerHTML =
-      marked.parse(currentChapter.content);
-  } else {
-    document.getElementById("content").innerText =
-      currentChapter.content;
-  }
+  // markdown
+  document.getElementById("content").innerHTML =
+    typeof marked !== "undefined"
+      ? marked.parse(currentChapter.content)
+      : currentChapter.content;
+
+  // 🔥 scroll ke atas
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 
   updateButtons();
 }
@@ -88,12 +85,16 @@ async function prevChapter() {
 
   currentVolume = prevVol;
 
+  // 🔥 ambil chapter terakhir dengan helper API (bukan fetch manual)
   const res = await fetch(
     `${SUPABASE_URL}/rest/v1/chapters?volume_id=eq.${currentVolume.id}&order=chapter_number.desc&limit=1`,
     { headers: headers() }
   );
 
   const data = await res.json();
+
+  if (!data.length) return;
+
   currentChapter = data[0];
 
   render();
@@ -124,9 +125,18 @@ async function updateButtons() {
   const nextBtn = document.getElementById("nextBtn");
   const prevBtn = document.getElementById("prevBtn");
 
-  // 🔥 tampil / hilang
-  nextBtn.style.display = next || nextVol ? "inline-block" : "none";
-  prevBtn.style.display = prev || prevVol ? "inline-block" : "none";
+  // 🔥 tampil / hilang setelah data siap
+  if (next || nextVol) {
+    nextBtn.style.display = "inline-block";
+  } else {
+    nextBtn.style.display = "none";
+  }
+
+  if (prev || prevVol) {
+    prevBtn.style.display = "inline-block";
+  } else {
+    prevBtn.style.display = "none";
+  }
 }
 
 // ================= EVENT =================
@@ -134,8 +144,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const nextBtn = document.getElementById("nextBtn");
   const prevBtn = document.getElementById("prevBtn");
 
-  if (nextBtn) nextBtn.addEventListener("click", nextChapter);
-  if (prevBtn) prevBtn.addEventListener("click", prevChapter);
+  nextBtn.addEventListener("click", nextChapter);
+  prevBtn.addEventListener("click", prevChapter);
 
   initReader();
 });
