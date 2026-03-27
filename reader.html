@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Baca Novel</title>
+  <title>Reader</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="css/style.css">
@@ -10,30 +10,28 @@
 
 <body>
 
-  <div class="container">
+  <main class="reader">
 
-    <h2 id="volume"></h2>
-    <h3 id="chapter"></h3>
+    <header class="reader-header">
+      <h2 id="volume"></h2>
+      <h3 id="chapter"></h3>
+    </header>
 
-    <!-- 📖 CONTENT -->
-    <div id="content"></div>
+    <article id="content" class="reader-content">
+      <p>Loading...</p>
+    </article>
 
-    <!-- 🔥 NAVIGATION -->
-    <div class="nav-buttons">
-  <button id="prevBtn" style="display:none">⬅️ Kembali</button>
-  <button id="nextBtn" style="display:none">Next ➡️</button>
-</div>
+    <nav class="reader-nav">
+      <button id="prevBtn" hidden>⬅️</button>
+      <button id="nextBtn" hidden>➡️</button>
+    </nav>
 
-  </div>
+  </main>
 
-  <!-- ================= SCRIPT ================= -->
-
+  <!-- scripts -->
   <script src="js/config.js"></script>
   <script src="js/api.js"></script>
-
-  <!-- 🔥 MARKDOWN -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
   <script src="js/reader.js"></script>
 
 </body>
